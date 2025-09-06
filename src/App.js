@@ -3,7 +3,7 @@ import './App.css';
 
 function App() {
   const [isHello, setIsHello] = useState(false);
-  const currentText = isHello ? 'Hello World' : 'Bye World';
+  const currentText = isHello ? 'This worked!' : 'Bye World';
 
   const toggleText = () => {
     setIsHello(!isHello);
