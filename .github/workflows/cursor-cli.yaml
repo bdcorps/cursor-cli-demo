@@ -10,6 +10,7 @@ on:
 jobs:
   cursor-agent:
     runs-on: ubuntu-latest
+    environment: CURSOR_API_KEY
     
     steps:
     - name: Checkout repository
