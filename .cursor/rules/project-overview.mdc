@@ -1,0 +1,20 @@
+---
+alwaysApply: true
+---
+
+# Hello World React App Project Rules
+
+This is an animated Hello World React application with the following structure:
+- Main entry point: [src/index.js](mdc:src/index.js)
+- Main component: [src/App.js](mdc:src/App.js) 
+- Styling: [src/App.css](mdc:src/App.css) and [src/index.css](mdc:src/index.css)
+- Configuration: [package.json](mdc:package.json)
+
+## Code Writing Policy
+**CRITICAL**: Do not write any code unless explicitly requested by the user. This rule is mentioned in [AGENTS.md](mdc:AGENTS.md).
+
+## Project Context
+- This is a demo React app that toggles between "Hello World" and "Bye World"
+- Features complex CSS animations including spinning, sliding, and gradient effects
+- Uses React hooks (useState) for state management
+- Designed as an interactive showcase of React and CSS capabilities

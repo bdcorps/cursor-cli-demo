@@ -1,0 +1,21 @@
+---
+globs: *.css
+---
+
+# CSS Animation Standards
+
+## Animation Guidelines
+- Use keyframe animations for complex effects
+- Combine multiple animations using comma separation
+- Use CSS custom properties for consistent theming
+- Prefer transform and opacity for performance
+
+## Naming Conventions
+- Use descriptive keyframe names (spinAndSlide, colorShift, buttonPulse)
+- Use BEM-style class names when adding new components
+- Keep animation durations consistent with existing timing
+
+## Color Schemes
+- Use gradient backgrounds for visual appeal
+- Implement rainbow/spectrum effects for text and borders
+- Maintain accessibility with sufficient contrast ratios

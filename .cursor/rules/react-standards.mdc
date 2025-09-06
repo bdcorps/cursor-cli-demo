@@ -1,0 +1,20 @@
+---
+globs: *.js,*.jsx
+---
+
+# React JavaScript Standards
+
+## State Management
+- Use React hooks (useState, useEffect) for state management
+- Follow the existing pattern of toggle functionality
+- Keep state simple and focused
+
+## Component Structure  
+- Use functional components with hooks
+- Export components as default exports
+- Import React and required hooks at the top
+
+## Event Handlers
+- Use descriptive names like `toggleText`, `handleClick`
+- Keep event handlers simple and focused
+- Use arrow functions for inline handlers when appropriate

@@ -1,0 +1,29 @@
+---
+alwaysApply: false
+---
+# Marketing Content Guidelines
+
+## Brand Voice
+- Playful and interactive tone
+- Developer-friendly language
+- Focus on the "magic" of animations and React
+- Emphasize simplicity and elegance
+
+## Key Features to Highlight
+- Interactive text toggling
+- Smooth CSS animations
+- React state management demonstration
+- Modern gradient designs
+- Responsive user interface
+
+## Content Types
+- Hero sections with call-to-action buttons
+- Feature highlight lists with emojis
+- Technical benefit descriptions
+- Demo encouragement phrases
+
+## Avoid
+- Overly technical jargon in marketing copy
+- Long paragraphs - keep copy concise
+- Generic "hello world" descriptions
+- Boring or static language
