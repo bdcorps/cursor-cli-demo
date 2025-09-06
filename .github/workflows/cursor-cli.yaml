@@ -1,0 +1,10 @@
+- name: Install Cursor CLI
+  run: |
+    curl https://cursor.com/install -fsS | bash
+    echo "$HOME/.cursor/bin" >> $GITHUB_PATH
+
+- name: Run Cursor Agent
+  env:
+    CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+  run: |
+    cursor-agent -p "Say I'm a cool guy" --model gpt-5
