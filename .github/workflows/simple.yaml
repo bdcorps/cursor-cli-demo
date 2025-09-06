@@ -26,3 +26,5 @@ jobs:
         CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
       run: |
         cursor-agent -p "Say I'm a cool guy" --model gpt-5
+
+    
