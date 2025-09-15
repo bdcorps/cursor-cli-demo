@@ -1,0 +1,292 @@
+---
+globs: *.tsx,*.ts,*.css
+description: React component patterns, TypeScript conventions, and styling standards
+---
+
+# React Frontend Development Standards
+
+## 🏗️ Component Structure & TypeScript
+
+### Functional Components
+- Use functional components with TypeScript
+- Default export for page and layout components
+- Use proper TypeScript typing for all props
+- Use `Readonly<{}>` wrapper for props that shouldn't be mutated
+
+### Component Naming
+- **Pages**: Descriptive names like `Home`, `About`, `Dashboard`
+- **Layouts**: Use `RootLayout`, `DashboardLayout` pattern
+- **Components**: PascalCase for all component names
+- **Files**: Match component names exactly
+
+### Next.js App Router Patterns
+```tsx
+// ✅ Good: Proper page component
+export default function Home() {
+  return (
+    <div className="min-h-screen">
+      {/* content */}
+    </div>
+  );
+}
+
+// ✅ Good: Layout with metadata
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Page Title",
+  description: "Page description",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## 🎨 Tailwind CSS & Styling Standards
+
+### Responsive Design
+- Always use mobile-first approach
+- Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`
+- Test on multiple screen sizes
+
+### Dark Mode Support
+- Use `dark:` prefix for dark mode variants
+- Leverage CSS variables defined in globals.css
+- Use `bg-background` and `text-foreground` classes
+
+### Layout Patterns
+```tsx
+// ✅ Good: CSS Grid for complex layouts
+<div className="grid grid-rows-[20px_1fr_20px] min-h-screen">
+  <main className="row-start-2">Content</main>
+  <footer className="row-start-3">Footer</footer>
+</div>
+
+// ✅ Good: Flexbox for simple alignments
+<div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+  <div>Item 1</div>
+  <div>Item 2</div>
+</div>
+
+// ✅ Good: Responsive with dark mode
+<div className="bg-white dark:bg-black text-foreground">
+  <p className="text-sm sm:text-base">Responsive text</p>
+</div>
+```
+
+### Color and Typography
+- Use Tailwind's opacity syntax: `bg-black/[.05]`
+- Reference CSS variables through Tailwind: `bg-background`
+- Use font classes: `font-sans`, `font-mono`
+- Apply proper line heights: `text-sm/6`
+- Use tracking for fine typography: `tracking-[-.01em]`
+
+## 🖼️ Image Optimization & Assets
+
+### Next.js Image Component
+```tsx
+// ✅ Good: Optimized logo image
+<Image
+  className="dark:invert"
+  src="/next.svg"
+  alt="Next.js logo"
+  width={180}
+  height={38}
+  priority  // For above-the-fold images
+/>
+
+// ✅ Good: Decorative icon
+<Image
+  aria-hidden
+  src="/file.svg"
+  alt="File icon"
+  width={16}
+  height={16}
+/>
+```
+
+### Font Management
+```tsx
+// ✅ Good: Font configuration in layout
+import { Geist, Geist_Mono } from "next/font/google";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+// Apply to body
+<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+```
+
+## ♿ Accessibility & Semantic HTML
+
+### Semantic Elements
+```tsx
+// ✅ Good: Proper semantic structure
+<main className="flex flex-col gap-8">
+  <h1>Page Title</h1>
+  <ol className="list-inside list-decimal">
+    <li>Step one</li>
+    <li>Step two</li>
+  </ol>
+  <footer className="flex gap-6">
+    {/* Footer content */}
+  </footer>
+</main>
+```
+
+### Link Best Practices
+```tsx
+// ✅ Good: External link with security
+<a
+  href="https://example.com"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="hover:underline hover:underline-offset-4"
+>
+  Visit Example
+</a>
+
+// ✅ Good: Button-styled link
+<a
+  className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+  href="/action"
+>
+  <Image src="/icon.svg" alt="" width={20} height={20} />
+  Action Button
+</a>
+```
+
+### Interactive Elements
+```tsx
+// ✅ Good: Button for interactions
+<button 
+  onClick={handleClick}
+  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+>
+  Click Me
+</button>
+```
+
+## 🎯 CSS Variables & Theming
+
+### Global CSS Structure
+```css
+/* globals.css */
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+```
+
+## ❌ What NOT to Do
+
+### Avoid These Patterns
+```tsx
+// ❌ Don't use inline styles
+<div style={{ backgroundColor: '#fff', padding: '20px' }}>
+
+// ❌ Don't use regular img tags
+<img src="/logo.png" alt="Logo" />
+
+// ❌ Don't use non-semantic HTML for interactions
+<div onClick={handleClick}>Click me</div>
+
+// ❌ Don't ignore TypeScript errors
+const component = (props: any) => { // any type
+
+// ❌ Don't miss accessibility attributes
+<a href="https://example.com">Link</a> // Missing target and rel
+
+// ❌ Don't use hardcoded colors
+<div className="bg-[#ffffff] text-[#000000]">
+
+// ❌ Don't forget responsive design
+<div className="w-96"> // Fixed width without responsive alternatives
+```
+
+## ✅ Best Practices Summary
+
+1. **Component Architecture**
+   - Use functional components with TypeScript
+   - Follow Next.js App Router conventions
+   - Export metadata for SEO in layouts
+
+2. **Styling**
+   - Mobile-first responsive design
+   - Tailwind utilities over custom CSS
+   - Dark mode support with CSS variables
+   - Consistent spacing and typography
+
+3. **Performance**
+   - Use `next/image` for all images
+   - Configure fonts at layout level
+   - Add `priority` prop for above-the-fold images
+
+4. **Accessibility**
+   - Semantic HTML elements
+   - Proper ARIA attributes
+   - Descriptive alt text
+   - Keyboard navigation support
+
+5. **Code Quality**
+   - Strict TypeScript typing
+   - Consistent naming conventions
+   - ESLint compliance
+   - Proper error handling
+
+## 📁 File Organization
+
+```
+src/
+└── app/
+    ├── (auth)/          # Route groups
+    │   ├── login/
+    │   └── signup/
+    ├── dashboard/       # Nested routes
+    │   ├── page.tsx
+    │   └── layout.tsx
+    ├── components/      # Reusable components
+    ├── globals.css      # Global styles
+    ├── layout.tsx       # Root layout
+    └── page.tsx         # Home page
+```
+
+Follow these patterns to maintain consistency, performance, and accessibility across the React application.
