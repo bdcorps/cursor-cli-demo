@@ -1,4 +1,5 @@
 import Image from "next/image";
+import BlurButton from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -49,6 +50,35 @@ export default function Home() {
           >
             Read our docs
           </a>
+        </div>
+
+        {/* Blur Button Showcase */}
+        <div className="flex flex-col gap-6 items-center w-full mt-8">
+          <h2 className="text-2xl font-bold text-center">Blur Button Showcase</h2>
+          
+          <div className="flex gap-4 items-center flex-wrap justify-center">
+            <BlurButton variant="default" size="sm">
+              Small Default
+            </BlurButton>
+            
+            <BlurButton variant="primary" size="md">
+              Primary Medium
+            </BlurButton>
+            
+            <BlurButton variant="secondary" size="lg">
+              Secondary Large
+            </BlurButton>
+          </div>
+          
+          <div className="flex gap-4 items-center flex-wrap justify-center">
+            <BlurButton variant="primary" size="md" onClick={() => alert('Blur button clicked!')}>
+              Click Me!
+            </BlurButton>
+            
+            <BlurButton variant="default" size="md" disabled>
+              Disabled Button
+            </BlurButton>
+          </div>
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
