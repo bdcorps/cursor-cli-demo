@@ -2,19 +2,27 @@
 globs: *.js,*.jsx
 ---
 
-# React JavaScript Standards
+# React Development Standards
+
+## Component Architecture
+- Use functional components with React Hooks (useState, useEffect)
+- Follow React 18+ best practices including StrictMode usage
+- Maintain single responsibility principle for components
+- Use modern ES6+ JavaScript syntax
 
 ## State Management
-- Use React hooks (useState, useEffect) for state management
-- Follow the existing pattern of toggle functionality
-- Keep state simple and focused
+- Use useState for local component state
+- Implement proper state updates with functional updates when needed
+- Follow React's unidirectional data flow principles
+- Example from [App.js](mdc:src/App.js): `const [isHello, setIsHello] = useState(false);`
 
-## Component Structure  
-- Use functional components with hooks
-- Export components as default exports
-- Import React and required hooks at the top
+## Event Handling
+- Use arrow functions for event handlers to avoid binding issues
+- Implement proper event delegation where applicable
+- Follow the pattern established in the toggle functionality
 
-## Event Handlers
-- Use descriptive names like `toggleText`, `handleClick`
-- Keep event handlers simple and focused
-- Use arrow functions for inline handlers when appropriate
+## Code Style
+- Use consistent indentation (2 spaces)
+- Implement proper JSX formatting
+- Use descriptive variable and function names
+- Add comments for complex logic or business rules

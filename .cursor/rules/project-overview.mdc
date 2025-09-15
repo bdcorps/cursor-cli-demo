@@ -2,19 +2,23 @@
 alwaysApply: true
 ---
 
-# Hello World React App Project Rules
+# Project Overview
 
-This is an animated Hello World React application with the following structure:
-- Main entry point: [src/index.js](mdc:src/index.js)
-- Main component: [src/App.js](mdc:src/App.js) 
-- Styling: [src/App.css](mdc:src/App.css) and [src/index.css](mdc:src/index.css)
-- Configuration: [package.json](mdc:package.json)
+This is an animated React demo application called "Hello World React App" that showcases advanced CSS animations and interactive text transitions.
 
-## Code Writing Policy
-**CRITICAL**: Do not write any code unless explicitly requested by the user. This rule is mentioned in [AGENTS.md](mdc:AGENTS.md).
+## Key Files
+- [App.js](mdc:src/App.js) - Main React component with toggle functionality
+- [App.css](mdc:src/App.css) - Complex CSS animations and styling system
+- [index.js](mdc:src/index.js) - React root rendering with StrictMode
+- [package.json](mdc:package.json) - Project dependencies and scripts
+- [index.html](mdc:public/index.html) - HTML template
 
-## Project Context
-- This is a demo React app that toggles between "Hello World" and "Bye World"
-- Features complex CSS animations including spinning, sliding, and gradient effects
-- Uses React hooks (useState) for state management
-- Designed as an interactive showcase of React and CSS capabilities
+## Project Purpose
+Demonstrates modern React development with sophisticated visual effects including:
+- Text toggle between "Hello World" and "Bye World"
+- Multi-layered CSS animations (spinning, sliding, color shifting)
+- Gradient backgrounds and animated button interactions
+- GitHub Actions integration with Cursor CLI for automated code review
+
+## Code Modification Policy
+**CRITICAL**: You are not allowed to write any code unless explicitly told to do so by the project owner. Focus on analysis, documentation, and guidance.

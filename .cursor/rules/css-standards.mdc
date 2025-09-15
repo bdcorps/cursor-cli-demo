@@ -4,18 +4,28 @@ globs: *.css
 
 # CSS Animation Standards
 
-## Animation Guidelines
-- Use keyframe animations for complex effects
-- Combine multiple animations using comma separation
-- Use CSS custom properties for consistent theming
-- Prefer transform and opacity for performance
+## Animation Architecture
+The project uses a sophisticated multi-layered animation system. Reference [App.css](mdc:src/App.css) for the complete implementation.
 
-## Naming Conventions
-- Use descriptive keyframe names (spinAndSlide, colorShift, buttonPulse)
-- Use BEM-style class names when adding new components
-- Keep animation durations consistent with existing timing
+## Animation Principles
+- Layer multiple animations using pseudo-elements (::before, ::after)
+- Use transform and opacity properties for optimal performance
+- Implement smooth transitions with appropriate easing functions
+- Create depth effects through z-index layering
 
-## Color Schemes
-- Use gradient backgrounds for visual appeal
-- Implement rainbow/spectrum effects for text and borders
-- Maintain accessibility with sufficient contrast ratios
+## Key Animation Patterns
+- **Text Animations**: `spinAndSlide`, `colorShift` for main heading
+- **Gradient Effects**: `gradientShift` for dynamic color transitions  
+- **Button Interactions**: `buttonGradient`, `buttonPulse` for interactive elements
+- **Rotation Effects**: Multiple `spin` and `rotate` keyframes for different elements
+
+## Performance Guidelines
+- Use `will-change` property for elements with complex animations
+- Prefer `transform` over changing layout properties
+- Consider `animation-play-state: paused` for hover interactions
+- Implement proper timing functions to avoid janky animations
+
+## Color System
+- Primary gradients: Purple to blue (`#667eea` to `#764ba2`)
+- Rainbow effects: Multi-color conic and linear gradients
+- Transparency layers: Use rgba values for depth effects
