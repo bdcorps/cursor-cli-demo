@@ -1,4 +1,629 @@
 ---
+description: API route implementation standards for Next.js App Router with TypeScript
+globs: ["**/api/**", "**/route.ts", "**/route.js"]
+alwaysApply: true
+---
+
+# Next.js API Routes Implementation Standards
+
+## 🏗️ API Route Structure & File Organization
+
+### App Router Convention
+- API routes must be placed in `src/app/api/` directory
+- Each route is a `route.ts` (or `route.js`) file in its own directory
+- Use TypeScript for all API routes with proper typing
+
+### Directory Structure
+```
+src/app/api/
+├── auth/
+│   ├── login/
+│   │   └── route.ts
+│   ├── logout/
+│   │   └── route.ts
+│   └── register/
+│       └── route.ts
+├── users/
+│   ├── route.ts          # GET /api/users, POST /api/users
+│   └── [id]/
+│       └── route.ts      # GET /api/users/123, PUT /api/users/123, DELETE /api/users/123
+├── posts/
+│   ├── route.ts
+│   └── [slug]/
+│       └── route.ts
+└── health/
+    └── route.ts          # Health check endpoint
+```
+
+I've created a comprehensive cursor rules file for API route implementation in your Next.js project. This rules file covers:
+
+## Key Features:
+
+1. **Next.js App Router Conventions** - Proper file organization using the `src/app/api/` directory structure
+2. **TypeScript Integration** - Full TypeScript support with proper typing for requests, responses, and parameters
+3. **Security Best Practices** - Authentication, validation, rate limiting, and CORS handling
+4. **Error Handling** - Comprehensive error handling with consistent response formats
+5. **HTTP Standards** - Proper use of HTTP methods and status codes
+6. **Database Integration** - Patterns for database connectivity and query handling
+7. **Testing Guidelines** - Unit testing approaches for API routes
+
+## Structure Covered:
+
+- Basic route handlers (GET, POST, PUT, DELETE)
+- Dynamic routes with parameters
+- Request validation and security
+- Response standardization
+- Middleware patterns
+- Database integration
+- Testing strategies
+
+The rules file follows the same format as your existing rules and integrates well with your current Next.js 15.5.3 setup using TypeScript and the App Router. It provides clear examples of what to do and what to avoid, making it easy for
+
+## 📝 Route Handler Implementation
+
+### Basic Route Handler Template
+```typescript
+// ✅ Good: Complete API route with proper TypeScript
+import { NextRequest, NextResponse } from 'next/server';
+
+// GET handler
+export async function GET(request: NextRequest) {
+  try {
+    // Extract search params
+    const { searchParams } = new URL(request.url);
+    const page = searchParams.get('page') || '1';
+    const limit = searchParams.get('limit') || '10';
+
+    // Business logic here
+    const data = await fetchData({ page: parseInt(page), limit: parseInt(limit) });
+
+    return NextResponse.json(
+      { 
+        success: true, 
+        data,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: data.length
+        }
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// POST handler
+export async function POST(request: NextRequest) {
+  try {
+    // Validate content type
+    const contentType = request.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
+      return NextResponse.json(
+        { success: false, error: 'Content-Type must be application/json' },
+        { status: 400 }
+      );
+    }
+
+    // Parse and validate request body
+    const body = await request.json();
+    const validatedData = validateRequestBody(body);
+
+    if (!validatedData.valid) {
+      return NextResponse.json(
+        { success: false, error: 'Validation failed', details: validatedData.errors },
+        { status: 400 }
+      );
+    }
+
+    // Business logic
+    const result = await createResource(validatedData.data);
+
+    return NextResponse.json(
+      { success: true, data: result },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### Dynamic Route Handlers
+```typescript
+// ✅ Good: Dynamic route with proper parameter handling
+// File: src/app/api/users/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+export async function GET(request: NextRequest, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    
+    // Validate ID parameter
+    if (!id || isNaN(parseInt(id))) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid user ID' },
+        { status: 400 }
+      );
+    }
+
+    const user = await getUserById(parseInt(id));
+    
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: user });
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    
+    const updatedUser = await updateUser(parseInt(id), body);
+    
+    return NextResponse.json({ success: true, data: updatedUser });
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    
+    await deleteUser(parseInt(id));
+    
+    return NextResponse.json(
+      { success: true, message: 'User deleted successfully' },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## 🔒 Security & Validation
+
+### Request Validation
+```typescript
+// ✅ Good: Input validation utility
+interface ValidationResult<T> {
+  valid: boolean;
+  data?: T;
+  errors?: string[];
+}
+
+function validateUserInput(data: any): ValidationResult<UserInput> {
+  const errors: string[] = [];
+  
+  if (!data.email || !isValidEmail(data.email)) {
+    errors.push('Valid email is required');
+  }
+  
+  if (!data.name || data.name.length < 2) {
+    errors.push('Name must be at least 2 characters');
+  }
+  
+  if (data.age && (data.age < 0 || data.age > 150)) {
+    errors.push('Age must be between 0 and 150');
+  }
+  
+  if (errors.length > 0) {
+    return { valid: false, errors };
+  }
+  
+  return { valid: true, data: data as UserInput };
+}
+
+// Usage in route handler
+const validation = validateUserInput(body);
+if (!validation.valid) {
+  return NextResponse.json(
+    { success: false, error: 'Validation failed', details: validation.errors },
+    { status: 400 }
+  );
+}
+```
+
+### Authentication & Authorization
+```typescript
+// ✅ Good: Authentication middleware
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyToken } from '@/lib/auth';
+
+export async function authenticateRequest(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json(
+      { success: false, error: 'Authorization token required' },
+      { status: 401 }
+    );
+  }
+  
+  const token = authHeader.substring(7);
+  
+  try {
+    const user = await verifyToken(token);
+    return { success: true, user };
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: 'Invalid or expired token' },
+      { status: 401 }
+    );
+  }
+}
+
+// Usage in protected route
+export async function GET(request: NextRequest) {
+  const authResult = await authenticateRequest(request);
+  if (authResult instanceof NextResponse) {
+    return authResult; // Return error response
+  }
+  
+  // Continue with authenticated user
+  const { user } = authResult;
+  // ... rest of handler
+}
+```
+
+### Rate Limiting
+```typescript
+// ✅ Good: Simple rate limiting
+import { NextRequest, NextResponse } from 'next/server';
+
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+export function rateLimit(request: NextRequest, maxRequests = 100, windowMs = 60000) {
+  const clientIP = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+  const now = Date.now();
+  const windowStart = now - windowMs;
+  
+  const clientData = rateLimitMap.get(clientIP);
+  
+  if (!clientData || clientData.resetTime < windowStart) {
+    rateLimitMap.set(clientIP, { count: 1, resetTime: now + windowMs });
+    return { allowed: true };
+  }
+  
+  if (clientData.count >= maxRequests) {
+    return { 
+      allowed: false, 
+      resetTime: clientData.resetTime,
+      remaining: 0
+    };
+  }
+  
+  clientData.count++;
+  return { 
+    allowed: true, 
+    remaining: maxRequests - clientData.count 
+  };
+}
+```
+
+## 📊 Response Standards
+
+### Consistent Response Format
+```typescript
+// ✅ Good: Standardized response interfaces
+interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  meta?: {
+    timestamp: string;
+    requestId: string;
+  };
+}
+
+// Success response helper
+function createSuccessResponse<T>(
+  data: T, 
+  message?: string, 
+  status = 200
+): NextResponse {
+  return NextResponse.json({
+    success: true,
+    data,
+    message,
+    meta: {
+      timestamp: new Date().toISOString(),
+      requestId: crypto.randomUUID()
+    }
+  } as ApiResponse<T>, { status });
+}
+
+// Error response helper
+function createErrorResponse(
+  error: string, 
+  status = 500, 
+  details?: any
+): NextResponse {
+  return NextResponse.json({
+    success: false,
+    error,
+    details,
+    meta: {
+      timestamp: new Date().toISOString(),
+      requestId: crypto.randomUUID()
+    }
+  } as ApiResponse, { status });
+}
+```
+
+### HTTP Status Codes
+```typescript
+// ✅ Good: Proper status code usage
+export async function GET(request: NextRequest) {
+  // 200 - Success with data
+  return NextResponse.json({ data }, { status: 200 });
+}
+
+export async function POST(request: NextRequest) {
+  // 201 - Resource created
+  return NextResponse.json({ data: newResource }, { status: 201 });
+}
+
+export async function PUT(request: NextRequest) {
+  // 200 - Resource updated
+  return NextResponse.json({ data: updatedResource }, { status: 200 });
+}
+
+export async function DELETE(request: NextRequest) {
+  // 204 - No content (successful deletion)
+  return new NextResponse(null, { status: 204 });
+}
+
+// Error responses
+function handleErrors() {
+  // 400 - Bad Request (validation errors)
+  return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+  
+  // 401 - Unauthorized
+  return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  
+  // 403 - Forbidden
+  return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  
+  // 404 - Not Found
+  return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
+  
+  // 409 - Conflict
+  return NextResponse.json({ error: 'Resource already exists' }, { status: 409 });
+  
+  // 422 - Unprocessable Entity
+  return NextResponse.json({ error: 'Validation failed' }, { status: 422 });
+  
+  // 500 - Internal Server Error
+  return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+}
+```
+
+## 🔧 Middleware & Utilities
+
+### CORS Configuration
+```typescript
+// ✅ Good: CORS headers for API routes
+export async function GET(request: NextRequest) {
+  const response = NextResponse.json({ data: 'Hello World' });
+  
+  // Add CORS headers
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  return response;
+}
+
+// Handle preflight requests
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+```
+
+### Database Integration
+```typescript
+// ✅ Good: Database integration pattern
+// File: src/lib/database.ts
+import { Pool } from 'pg'; // or your preferred database client
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production',
+});
+
+export async function query(text: string, params?: any[]) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(text, params);
+    return result;
+  } finally {
+    client.release();
+  }
+}
+
+// Usage in API route
+import { query } from '@/lib/database';
+
+export async function GET() {
+  try {
+    const result = await query('SELECT * FROM users WHERE active = $1', [true]);
+    return NextResponse.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Database query failed' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## 🧪 Testing API Routes
+
+### Unit Testing Template
+```typescript
+// ✅ Good: API route testing
+// File: __tests__/api/users.test.ts
+import { GET, POST } from '@/app/api/users/route';
+import { NextRequest } from 'next/server';
+
+describe('/api/users', () => {
+  it('should return users list', async () => {
+    const request = new NextRequest('http://localhost:3000/api/users');
+    const response = await GET(request);
+    const data = await response.json();
+    
+    expect(response.status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(Array.isArray(data.data)).toBe(true);
+  });
+  
+  it('should create new user', async () => {
+    const userData = { name: 'John Doe', email: 'john@example.com' };
+    const request = new NextRequest('http://localhost:3000/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
+    
+    const response = await POST(request);
+    const data = await response.json();
+    
+    expect(response.status).toBe(201);
+    expect(data.success).toBe(true);
+    expect(data.data.name).toBe(userData.name);
+  });
+});
+```
+
+## ❌ What NOT to Do
+
+### Avoid These Patterns
+```typescript
+// ❌ Don't use pages/api directory (old Pages Router)
+// pages/api/users.js
+
+// ❌ Don't mix route handlers in same file without proper HTTP method functions
+export default function handler(req, res) { // Wrong pattern
+
+// ❌ Don't ignore error handling
+export async function GET() {
+  const data = await riskyOperation(); // No try/catch
+  return NextResponse.json(data);
+}
+
+// ❌ Don't use any types
+export async function POST(request: any) { // Should be NextRequest
+
+// ❌ Don't ignore request validation
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  await createUser(body); // No validation
+}
+
+// ❌ Don't hardcode status messages
+return NextResponse.json({ error: 'Something went wrong' }); // Be specific
+
+// ❌ Don't forget proper HTTP status codes
+return NextResponse.json({ error: 'Not found' }); // Missing 404 status
+
+// ❌ Don't expose sensitive information
+return NextResponse.json({ 
+  error: 'Database connection failed: ' + dbError.message // Exposes internals
+});
+```
+
+## ✅ Best Practices Summary
+
+1. **File Organization**
+   - Use `src/app/api/` directory structure
+   - One `route.ts` file per endpoint
+   - Group related endpoints in subdirectories
+
+2. **TypeScript Integration**
+   - Always use TypeScript for API routes
+   - Proper typing for request/response objects
+   - Interface definitions for data structures
+
+3. **Error Handling**
+   - Comprehensive try/catch blocks
+   - Consistent error response format
+   - Proper HTTP status codes
+   - Logging for debugging
+
+4. **Security**
+   - Input validation for all requests
+   - Authentication/authorization checks
+   - Rate limiting implementation
+   - CORS configuration
+
+5. **Performance**
+   - Database connection pooling
+   - Response caching where appropriate
+   - Efficient query patterns
+   - Proper resource cleanup
+
+6. **Testing**
+   - Unit tests for all endpoints
+   - Integration tests for complex flows
+   - Mock external dependencies
+   - Test error scenarios
+
+Follow these patterns to maintain consistent, secure, and performant API routes in your Next.js application.
 description:
 globs:
 alwaysApply: true

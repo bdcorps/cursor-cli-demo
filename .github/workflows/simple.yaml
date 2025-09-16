@@ -1,4 +1,4 @@
-name: Cursor CLI Demo
+name: Cursor Simple Workflow
 
 on:
   push:

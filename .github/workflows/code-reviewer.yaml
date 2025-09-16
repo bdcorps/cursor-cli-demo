@@ -1,4 +1,4 @@
-name: Cursor Code Review
+name: Cursor Code Reviewer
 
 on:
   pull_request:

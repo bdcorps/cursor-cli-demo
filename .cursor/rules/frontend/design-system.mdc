@@ -1,0 +1,391 @@
+---
+globs: *.tsx,*.ts,*.css
+description: Design system standards for Tailwind CSS and ShadCN UI components
+---
+
+# Design System Standards
+
+## 🏗️ Component Architecture
+
+### Directory Structure
+```
+/src/components/
+├── ui/                 # Primitive components (buttons, inputs, cards)
+│   ├── button.tsx     # Base button variants
+│   ├── input.tsx      # Form inputs
+│   ├── card.tsx       # Container components
+│   └── badge.tsx      # Status indicators
+├── common/            # Composite components (header, navigation, forms)
+│   ├── header.tsx     # Site header with navigation
+│   ├── sidebar.tsx    # Navigation sidebar
+│   └── form-field.tsx # Complete form field with label/error
+└── layout/            # Layout-specific components
+    ├── container.tsx  # Page containers
+    └── grid.tsx       # Grid systems
+```
+
+This comprehensive design system rules file provides:
+
+1. **Clear component architecture** following your existing structure
+2. **Design tokens and CSS variables** for consistent theming
+3. **Component variant patterns** using Class Variance Authority (CVA)
+4. **Responsive design guidelines** with mobile-first approach
+5. **Dark mode implementation** patterns
+6. **Accessibility standards** with proper ARIA usage
+7. **Animation and transition** guidelines
+8. **Anti-patterns to avoid** with clear examples
+9. **Best practices checklist** for component creation
+
+The file builds on your existing setup with Tailwind and ShadCN UI while providing comprehensive guidance for maintaining a consistent design system across your project.
+
+### Component Naming & Exports
+```tsx
+// ✅ Good: Primitive UI component
+export function Button({ variant = "default", size = "md", ...props }: ButtonProps) {
+  return <button className={buttonVariants({ variant, size })} {...props} />;
+}
+
+// ✅ Good: Composite component
+export function FormField({ label, error, children }: FormFieldProps) {
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      {children}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+    </div>
+  );
+}
+```
+
+## 🎨 Design Tokens & CSS Variables
+
+### Color System
+```css
+/* globals.css - Define semantic color tokens */
+:root {
+  /* Base colors */
+  --background: 0 0% 100%;
+  --foreground: 224 71.4% 4.1%;
+  
+  /* UI colors */
+  --card: 0 0% 100%;
+  --card-foreground: 224 71.4% 4.1%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 224 71.4% 4.1%;
+```
+
+### Typography Scale
+```tsx
+// ✅ Good: Consistent typography classes
+const typographyVariants = {
+  h1: "scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl",
+  h2: "scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0",
+  h3: "scroll-m-20 text-2xl font-semibold tracking-tight",
+  h4: "scroll-m-20 text-xl font-semibold tracking-tight",
+  p: "leading-7 [&:not(:first-child)]:mt-6",
+  lead: "text-xl text-muted-foreground",
+  large: "text-lg font-semibold",
+  small: "text-sm font-medium leading-none",
+  muted: "text-sm text-muted-foreground",
+};
+```
+
+### Spacing System
+```tsx
+// ✅ Good: Consistent spacing scale
+const spacingScale = {
+  xs: "0.5rem",   // 8px
+  sm: "0.75rem",  // 12px  
+  md: "1rem",     // 16px
+  lg: "1.5rem",   // 24px
+  xl: "2rem",     // 32px
+  "2xl": "3rem",  // 48px
+  "3xl": "4rem",  // 64px
+};
+
+// Use with Tailwind classes: p-2, m-4, gap-6, space-y-8
+```
+
+## 🎯 Component Composition Patterns
+
+### Form Components
+```tsx
+// ✅ Good: Composable form field
+export function FormField({ children, label, description, error }: FormFieldProps) {
+  return (
+    <div className="space-y-2">
+      {label && <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{label}</Label>}
+      {children}
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
+      {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+    </div>
+  );
+}
+
+// Usage
+<FormField label="Email" error={errors.email}>
+  <Input type="email" placeholder="Enter your email" />
+</FormField>
+```
+
+### Card Components
+```tsx
+// ✅ Good: Flexible card composition
+export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)}
+      {...props}
+    />
+  );
+}
+
+export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />;
+}
+
+export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+  return <h3 className={cn("text-2xl font-semibold leading-none tracking-tight", className)} {...props} />;
+}
+
+export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("p-6 pt-0", className)} {...props} />;
+}
+```
+
+## 📱 Responsive Design Patterns
+
+### Breakpoint Strategy
+```tsx
+// ✅ Good: Mobile-first responsive design
+<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  {items.map(item => (
+    <Card key={item.id} className="p-4 sm:p-6">
+      <CardTitle className="text-lg sm:text-xl">{item.title}</CardTitle>
+      <CardContent className="text-sm sm:text-base">{item.content}</CardContent>
+    </Card>
+  ))}
+</div>
+
+// ✅ Good: Responsive typography
+<h1 className="text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
+  Responsive Heading
+</h1>
+
+// ✅ Good: Responsive spacing
+<section className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+  <div className="mx-auto max-w-screen-xl">
+    {/* Content */}
+  </div>
+</section>
+```
+
+### Container Patterns
+```tsx
+// ✅ Good: Consistent container widths
+export function Container({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8", className)}
+      {...props}
+    />
+  );
+}
+
+// Usage variations
+<Container size="sm" className="max-w-screen-sm">    {/* Small container */}
+<Container size="lg" className="max-w-screen-2xl">   {/* Large container */}
+<Container className="max-w-none">                   {/* Full width */}
+```
+
+## 🌙 Dark Mode Implementation
+
+### Theme Toggle Pattern
+```tsx
+// ✅ Good: Theme provider setup
+"use client";
+
+import { createContext, useContext, useEffect, useState } from "react";
+
+type Theme = "dark" | "light" | "system";
+
+const ThemeProviderContext = createContext<{
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+}>({
+  theme: "system",
+  setTheme: () => null,
+});
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  const [theme, setTheme] = useState<Theme>("system");
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+
+    if (theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+      root.classList.add(systemTheme);
+      return;
+    }
+
+    root.classList.add(theme);
+  }, [theme]);
+
+  return (
+    <ThemeProviderContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeProviderContext.Provider>
+  );
+}
+
+export const useTheme = () => useContext(ThemeProviderContext);
+```
+
+### Dark Mode Component Patterns
+```tsx
+// ✅ Good: Dark mode aware components
+<div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <Button variant="outline" className="border-gray-200 dark:border-gray-800">
+    Dark Mode Button
+  </Button>
+</div>
+
+// ✅ Good: Image dark mode handling
+<Image
+  src="/logo.svg"
+  alt="Logo"
+  className="dark:invert"
+  width={120}
+  height={40}
+/>
+```
+
+## ♿ Accessibility Standards
+
+### Focus Management
+```tsx
+// ✅ Good: Proper focus styles
+const focusStyles = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+// Apply to interactive elements
+<button className={cn("...", focusStyles)}>
+  Button Text
+</button>
+```
+
+### ARIA Patterns
+```tsx
+// ✅ Good: Accessible dropdown menu
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="outline" aria-haspopup="true" aria-expanded={isOpen}>
+      Options
+      <ChevronDownIcon className="ml-2 h-4 w-4" aria-hidden="true" />
+    </Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end" className="w-56">
+    <DropdownMenuItem>
+      <UserIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+      Profile
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+// ✅ Good: Accessible form validation
+<FormField>
+  <Label htmlFor="email">Email</Label>
+  <Input 
+    id="email"
+    type="email"
+    aria-describedby={error ? "email-error" : undefined}
+    aria-invalid={!!error}
+  />
+  {error && (
+    <p id="email-error" className="text-sm text-destructive" role="alert">
+      {error}
+    </p>
+  )}
+</FormField>
+```
+
+## 🚀 Animation & Transitions
+
+### Consistent Animation Patterns
+```tsx
+// ✅ Good: Subtle UI animations
+const animationClasses = {
+  fadeIn: "animate-in fade-in-0 duration-200",
+  slideIn: "animate-in slide-in-from-bottom-2 duration-200",
+  scaleIn: "animate-in zoom-in-95 duration-200",
+  hover: "transition-colors hover:bg-accent hover:text-accent-foreground",
+  press: "transition-transform active:scale-95",
+};
+
+// Usage in components
+<Card className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
+  <CardContent className="transition-colors hover:bg-muted/50">
+    Interactive content
+  </CardContent>
+</Card>
+```
+
+## ❌ Anti-Patterns to Avoid
+
+```tsx
+// ❌ Don't use arbitrary values without semantic meaning
+<div className="bg-[#ff0000] text-[#ffffff]"> // Use semantic colors instead
+
+// ❌ Don't create inconsistent component APIs
+<Button color="red" size="big" /> // Use variant="destructive" size="lg"
+
+// ❌ Don't ignore responsive design
+<div className="w-96"> // Use responsive classes: w-full max-w-sm sm:max-w-md
+
+// ❌ Don't skip accessibility attributes
+<button onClick={handleClick}>
+  <Icon /> // Missing aria-label or screen reader text
+</button>
+
+// ❌ Don't use hardcoded z-index values
+<div className="z-[9999]"> // Use semantic z-index scale
+
+// ❌ Don't create components without proper TypeScript types
+const MyComponent = ({ ...props }) => { // Missing proper typing
+```
+
+## ✅ Best Practices Checklist
+
+### Component Creation
+- [ ] Use TypeScript with proper prop interfaces
+- [ ] Implement variant system with CVA
+- [ ] Include proper accessibility attributes
+- [ ] Support dark mode variants
+- [ ] Add responsive design considerations
+- [ ] Include focus management
+- [ ] Export proper TypeScript types
+
+### Styling Standards
+- [ ] Use semantic color tokens
+- [ ] Follow mobile-first responsive approach
+- [ ] Implement consistent spacing scale
+- [ ] Use Tailwind utilities over custom CSS
+- [ ] Support dark mode with CSS variables
+- [ ] Include hover and focus states
+- [ ] Add smooth transitions
+
+### Code Quality
+- [ ] Follow naming conventions
+- [ ] Use composition over inheritance
+- [ ] Keep components focused and single-purpose
+- [ ] Document complex component APIs
+- [ ] Test accessibility with screen readers
+- [ ] Validate responsive behavior
+- [ ] Check color contrast ratios
+
+This design system ensures consistency, accessibility, and maintainability across your Tailwind CSS and ShadCN UI implementation.
+
+

@@ -1,0 +1,46 @@
+# Front-End Testing Rules
+
+## React Testing Library Guidelines
+
+### Test Structure
+- Use `describe` blocks to group related tests
+- Write descriptive test names that explain the expected behavior
+- Follow AAA pattern: Arrange, Act, Assert
+
+### Best Practices
+- Test user behavior, not implementation details
+- Avoid testing internal component state
+- Use `userEvent` for user interactions instead of `fireEvent`
+- Mock external dependencies and API calls
+- Use `waitFor` for asynchronous operations
+- Prefer `screen` queries over destructuring from `render()`
+
+### Example Test Structure
+```javascript
+describe('ComponentName', () => {
+  it('should render with expected content', () => {
+    render(<ComponentName />);
+    expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
+  });
+
+  it('should handle user interaction', async () => {
+    const user = userEvent.setup();
+    render(<ComponentName />);
+    
+    await user.click(screen.getByRole('button'));
+    expect(screen.getByText(/success/i)).toBeInTheDocument();
+  });
+});
+```
+
+### Common Assertions
+- `toBeInTheDocument()` - element exists
+- `toHaveTextContent()` - text content matches
+- `toBeDisabled()` / `toBeEnabled()` - form element state
+- `toHaveValue()` - input values
+- `toHaveClass()` - CSS classes
+
+### File Naming
+- Test files: `ComponentName.test.tsx`
+- Test utilities: `test-utils.ts`
+- Mocks: `__mocks__/moduleName.ts`
