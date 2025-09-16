@@ -1,6 +1,16 @@
+'use client';
+
 import Image from "next/image";
+import Button from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 
 export default function Home() {
+  const { showToast } = useToast();
+
+  const handleButtonClick = () => {
+    showToast('Blue button clicked successfully! 🎉', 'success');
+  };
+
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -24,6 +34,15 @@ export default function Home() {
             Save and see your changes instantly.
           </li>
         </ol>
+
+        <div className="flex gap-4 items-center justify-center">
+          <Button 
+            onClick={handleButtonClick}
+            aria-label="Click to show a success notification"
+          >
+            Beautiful Blue Button
+          </Button>
+        </div>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
